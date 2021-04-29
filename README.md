@@ -31,3 +31,5 @@ code, building binaries and executing database migrations.
 1. Every path in your API need a similar go file that handle those routes. Example:
    /v1/health -> /cmd/api/health.go
    /v1/movies -> /cmd/api/movies.go
+
+1. Any helpers method should not log anything except returning error. All error are logged in specific routes file and there are two loggers. One app.logger for application logging and other is http.error for sending error back to client/user
