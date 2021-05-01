@@ -1,8 +1,17 @@
+DATABASE_URL=postgres://greenlight:password@localhost/greenlight?sslmode=disable
+
 run:
 	go run ./cmd/api -port=3000 -env=development
 
-pg_start:
-	brew services start postgresql
+migrate.up:
+	migrate -path=./migrations -database "$(DATABASE_URL)" up
 
-pg_stop: 
+
+migrate.down:
+	migrate -path=./migrations -database "$(DATABASE_URL)" down
+	
+db.start:
+	brew services start postgresql
+	
+db.stop:
 	brew services stop postgresql
