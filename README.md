@@ -35,3 +35,14 @@ code, building binaries and executing database migrations.
 1. Any helpers method should not log anything except returning error. All error are logged in specific routes file and there are two loggers. One app.logger for application logging and other is http.error for sending error back to client/user
 
 1. Error logging in Go can be repetitive, it is better to turn common logging into a function into its own file: errors.go
+
+1. Any errors that can be logically produced, you should use panic. Example: json.InvalidUnmarshalError.
+   The Go By Example page on panics summarizes all of this quite nicely:
+   A panic typically means something went unexpectedly wrong. Mostly we use it to fail fast on errors that shouldn’t occur during normal operation and that we aren’t prepared to handle gracefully.
+
+1. If json data is not proper, send back 422 Unprocessable Entity
+
+### Which code can be reused in other projects?
+
+1. `cmd/api/errors.go`
+1. `cmd/api/helpers.go` `readJSON()` function
