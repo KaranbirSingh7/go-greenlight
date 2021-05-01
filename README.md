@@ -46,3 +46,5 @@ code, building binaries and executing database migrations.
 
 1. `cmd/api/errors.go`
 1. `cmd/api/helpers.go` `readJSON()` function
+1. Want to tune PostgreSQL `https://pgtune.leopard.in.ua/#/`
+1.
