@@ -42,9 +42,15 @@ code, building binaries and executing database migrations.
 
 1. If json data is not proper, send back 422 Unprocessable Entity
 
+
+1. Want to tune PostgreSQL `https://pgtune.leopard.in.ua/#/`
+
+1. Postgres has hard limit of 100 total connections, can be changes by modifying postgresql.conf
+
+1. 
+
 ### Which code can be reused in other projects?
 
 1. `cmd/api/errors.go`
 1. `cmd/api/helpers.go` `readJSON()` function
-1. Want to tune PostgreSQL `https://pgtune.leopard.in.ua/#/`
-1.
+1. 
