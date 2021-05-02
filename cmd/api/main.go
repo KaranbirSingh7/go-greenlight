@@ -107,6 +107,10 @@ func main() {
 	// passing in the config struct. If this returns an error, we log it and exit the
 	// application immediately.
 	db, err := openDB(cfg)
+	if err != nil {
+		logger.Println("DB connection error", err)
+		os.Exit(1)
+	}
 	// Defer a call to db.Close() so that the connection pool is closed before the
 	// main() function exits.
 	defer db.Close()

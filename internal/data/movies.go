@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/karanbirsingh7/go-greenlight/internal/validator"
+	"github.com/lib/pq"
 )
 
 type MovieModel struct {
@@ -12,7 +13,23 @@ type MovieModel struct {
 }
 
 func (m MovieModel) Insert(movie *Movie) error {
-	return nil
+	query := `
+		INSERT INTO movies (title, year, runtime, genres)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id, created_at, version`
+
+	// values to be inserted in database
+	args := []interface{}{
+		movie.Title,
+		movie.Year,
+		movie.Runtime,
+		pq.Array(movie.Genres),
+	}
+
+	// why args...
+	// this is decoupling rather than passing each argu like (query, arg1, arg2, arg3, arg4). We are using (args..) which equals to arg1, arg2, arg3, arg4
+	return m.DB.QueryRow(query, args...).Scan(&movie.ID, &movie.CreatedAt, &movie.Version)
+
 }
 
 func (m MovieModel) Update(movie *Movie) error { return nil }
