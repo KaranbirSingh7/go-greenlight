@@ -48,6 +48,10 @@ code, building binaries and executing database migrations.
 
 1. For database migrations (schema change, column updates) use `golang-migrate`
 
+1. Use a model/database layer for all operations related to DB. See `./data/models/movies.go`
+
+1. Use of context. Timeout for context starts when it is created. Any time between created and context used will be counted.
+
 ### Which code can be reused in other projects?
 
 1. `cmd/api/errors.go`
