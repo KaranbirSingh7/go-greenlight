@@ -52,6 +52,8 @@ code, building binaries and executing database migrations.
 
 1. Use of context. Timeout for context starts when it is created. Any time between created and context used will be counted.
 
+1. POSTGRES SQL is the holy grail of database with lot of functions and extenstions. One of the good one is natural language search by using 'plainto_tsquery('simple', 'breakfast')'
+
 ### Which code can be reused in other projects?
 
 1. `cmd/api/errors.go`

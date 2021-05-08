@@ -6,14 +6,69 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/karanbirsingh7/go-greenlight/internal/validator"
 )
 
 // Define an envelope type
 type envelope map[string]interface{}
+
+// The readString() helper returns a string value from the query string, or the provided
+// default value if no matching key could be found.
+func (app *application) readString(qs url.Values, key string, defaultValue string) string {
+	// Extract the value for a given key from the query string. If no key exists this
+	// will return the empty string "".
+	s := qs.Get(key)
+
+	if s == "" {
+		return defaultValue
+	}
+
+	return s
+}
+
+// The readCSV() helper reads a string value from the query string and then splits it
+// into a slice on the comma character. If no matching key count be found, it returns
+// the provided default value.
+// CSV -> comma seperated value
+func (app *application) readCSV(qs url.Values, key string, defaultValue []string) []string {
+	// Extract the value for a given key from the query string. If no key exists this
+	// will return the empty string "".
+	csv := qs.Get(key)
+
+	if csv == "" {
+		return defaultValue
+	}
+
+	slice := strings.Split(csv, ",")
+
+	return slice
+}
+
+// The readInt() helper reads a string value from the query string and converts it to an
+// integer before returning. If no matching key count be found it returns the provided
+// default value. If the value couldn't be converted to an integer, then we record an
+// error message in the provided Validator instance.
+
+func (app *application) readInt(qs url.Values, key string, defaultValue int, v *validator.Validator) int {
+	// Extract the value for a given key from the query string. If no key exists this
+	// will return the empty string "".
+	s := qs.Get(key)
+	if s == "" {
+		return defaultValue
+	}
+
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		v.AddError(key, "must be an integer")
+		return defaultValue
+	}
+	return i
+}
 
 func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst interface{}) error {
 	// Use http.MaxBytesReader() to limit the size of the request body to 1MB.
