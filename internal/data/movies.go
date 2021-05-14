@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/karanbirsingh7/go-greenlight/internal/validator"
@@ -62,12 +63,12 @@ func (m MovieModel) Update(movie *Movie) error {
 }
 
 func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*Movie, error) {
-	query := `SELECT id, created_at, title, year, runtime, genres, version
+	query := fmt.Sprintf(`
+	SELECT id, created_at, title, year, runtime, genres, version
 	FROM movies
 	WHERE (to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) OR $1 = '')
 	AND (genres @> $2 OR $2 = '{}' )
-	ORDER BY id
-	`
+	ORDER BY %s %s, id ASC`, filters.sortColumn(), filters.sortDirection())
 
 	movies := []*Movie{}
 

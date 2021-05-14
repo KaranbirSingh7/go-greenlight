@@ -57,5 +57,5 @@ code, building binaries and executing database migrations.
 ### Which code can be reused in other projects?
 
 1. `cmd/api/errors.go`
-1. `cmd/api/helpers.go` `readJSON()` function
+1. `cmd/api/helpers.go` `readJSON()` / `writeJSON()` function
 1.
