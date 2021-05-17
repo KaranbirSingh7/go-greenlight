@@ -54,6 +54,8 @@ code, building binaries and executing database migrations.
 
 1. POSTGRES SQL is the holy grail of database with lot of functions and extenstions. One of the good one is natural language search by using 'plainto_tsquery('simple', 'breakfast')'
 
+1. You can easily implement paging in your api using COUNT, LIMIT and OFFSET for db queries with some custom logic for. See `calculateMetadata()` in `internal/data/filters.go`
+
 ### Which code can be reused in other projects?
 
 1. `cmd/api/errors.go`

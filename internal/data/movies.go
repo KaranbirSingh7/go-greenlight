@@ -63,6 +63,7 @@ func (m MovieModel) Update(movie *Movie) error {
 }
 
 func (m MovieModel) GetAll(title string, genres []string, filters Filters) ([]*Movie, Metadata, error) {
+	// count(*) over(): for paging and counting total available movies
 	query := fmt.Sprintf(`
 	SELECT count(*) OVER(), id, created_at, title, year, runtime, genres, version
 	FROM movies
