@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/karanbirsingh7/go-greenlight/internal/data"
+	"github.com/karanbirsingh7/go-greenlight/internal/jsonlog"
 )
 
 // Declare a string containing the application version number. Later in the book we'll
@@ -39,7 +40,7 @@ type config struct {
 // logger, but it will grow to include a lot more as our build progresses.
 type application struct {
 	config config
-	logger *log.Logger
+	logger *jsonlog.Logger
 	models data.Models
 }
 
@@ -101,22 +102,21 @@ func main() {
 
 	// Initialize a new logger which writes messages to the standard out stream,
 	// prefixed with the current date and time.
-	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
+	logger := jsonlog.New(os.Stdout, jsonlog.LevelInfo)
 
 	// Call the openDB() helper function (see below) to create the connection pool,
 	// passing in the config struct. If this returns an error, we log it and exit the
 	// application immediately.
 	db, err := openDB(cfg)
 	if err != nil {
-		logger.Println("DB connection error", err)
-		os.Exit(1)
+		logger.PrintFatal(err, nil)
 	}
 	// Defer a call to db.Close() so that the connection pool is closed before the
 	// main() function exits.
 	defer db.Close()
 	// Also log a message to say that the connection pool has been successfully
 	// established.
-	logger.Printf("database connection pool established")
+	logger.PrintInfo("database connection pool established", nil)
 
 	app := &application{
 		config: cfg,
@@ -138,10 +138,14 @@ func main() {
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
+		ErrorLog:     log.New(logger, "", 0),
 	}
 
 	// Start server
-	logger.Printf("starting %s server on %s", cfg.env, srv.Addr)
+	logger.PrintInfo("starting server", map[string]string{
+		"addr": srv.Addr,
+		"env":  cfg.env,
+	})
 	err = srv.ListenAndServe()
-	log.Fatal(err)
+	logger.PrintFatal(err, nil)
 }
