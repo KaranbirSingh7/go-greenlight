@@ -3,7 +3,26 @@ package main
 import (
 	"fmt"
 	"net/http"
+
+	"golang.org/x/time/rate"
 )
+
+func (app *application) rateLimiter(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// if enabled then use limiter
+		if app.config.limiter.enabled {
+			// initialize limiter
+			limiter := rate.NewLimiter(rate.Limit(app.config.limiter.burst), app.config.limiter.burst)
+			// check and limit requests
+			if !limiter.Allow() {
+				app.rateLimitExceededResponse(w, r)
+				return
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
+}
 
 // Why recover?
 // its better to let client know that something wrong happened with 500 error rather than dropping connection in middle of call
