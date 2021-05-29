@@ -12,6 +12,7 @@ var (
 
 type Models struct {
 	Movies MovieModel
+	Users  UserModel
 }
 
 // takes pointer to database object and returns new Models
@@ -20,5 +21,6 @@ func NewModels(db *sql.DB) Models {
 		Movies: MovieModel{
 			DB: db,
 		},
+		Users: UserModel{DB: db},
 	}
 }
