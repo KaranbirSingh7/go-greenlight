@@ -9,6 +9,7 @@ import (
 
 	"github.com/karanbirsingh7/go-greenlight/internal/data"
 	"github.com/karanbirsingh7/go-greenlight/internal/jsonlog"
+	"github.com/karanbirsingh7/go-greenlight/internal/mailer"
 )
 
 // Declare a string containing the application version number. Later in the book we'll
@@ -35,6 +36,13 @@ type config struct {
 		burst   int
 		enabled bool
 	}
+	smtp struct {
+		host     string
+		port     int
+		username string
+		password string
+		sender   string
+	}
 }
 
 // Define an application struct to hold the dependencies for our HTTP handlers, helpers,
@@ -44,6 +52,7 @@ type application struct {
 	config config
 	logger *jsonlog.Logger
 	models data.Models
+	mailer mailer.Mailer
 }
 
 // The openDB() function returns a sql.DB connection pool.
@@ -92,13 +101,19 @@ func main() {
 	// Read the value of the port and env command-line flags into the config struct. We
 	// default to using the port number 4000 and the environment "development" if no
 	// corresponding flags are provided.
+
 	flag.IntVar(&cfg.port, "port", 3000, "API server port")
 	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
 	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("GREENLIGHT_DB_DSN"), "PostgreSQL DSN")
 	flag.IntVar(&cfg.db.maxOpenConns, "db-max-open-conns", 25, "PostgreSQL max open connections")
 	flag.IntVar(&cfg.db.maxIdleConns, "db-max-idle-conns", 25, "PostgreSQL max idle connections")
-
 	flag.StringVar(&cfg.db.maxIdleTime, "db-max-idle-time", "15m", "PostgreSQL max connection IDLE time")
+
+	flag.StringVar(&cfg.smtp.host, "smtp-host", "smtp.mailtrap.io", "SMTP host")
+	flag.IntVar(&cfg.smtp.port, "smtp-port", 25, "SMTP port")
+	flag.StringVar(&cfg.smtp.username, "smtp-username", "729f2f1d44039c", "SMTP username")
+	flag.StringVar(&cfg.smtp.password, "smtp-password", "16452293f18711", "SMTP password")
+	flag.StringVar(&cfg.smtp.sender, "smtp-sender", "Greenlight <no-reply@greenlight.net>", "SMTP sender")
 
 	flag.Float64Var(&cfg.limiter.rps, "limiter-rps", 2, "rate limiter maximum requests per second")
 	flag.IntVar(&cfg.limiter.burst, "limiter-burst", 4, "rate limiter maximum burst")
@@ -127,6 +142,7 @@ func main() {
 	app := &application{
 		config: cfg,
 		logger: logger,
+		mailer: mailer.New(cfg.smtp.host, cfg.smtp.port, cfg.smtp.username, cfg.smtp.password, cfg.smtp.sender),
 		models: data.NewModels(db),
 	}
 

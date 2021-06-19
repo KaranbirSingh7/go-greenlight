@@ -1,5 +1,5 @@
 DATABASE_URL=postgres://greenlight:password@localhost/greenlight?sslmode=disable
-
+PROGRAM_ARGS=""
 run:
 	go run ./cmd/api -port=4000 -env=development
 

@@ -209,3 +209,17 @@ func (app *application) readIDParam(r *http.Request) (int64, error) {
 	}
 	return id, nil
 }
+
+// The background() helper accepts an arbitrary function as a parameter.
+func (app *application) background(fn func()) {
+	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				app.logger.PrintError(fmt.Errorf("%s", err), nil)
+			}
+		}()
+
+		// executing passed in function
+		fn()
+	}()
+}
