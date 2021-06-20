@@ -212,7 +212,12 @@ func (app *application) readIDParam(r *http.Request) (int64, error) {
 
 // The background() helper accepts an arbitrary function as a parameter.
 func (app *application) background(fn func()) {
+	app.wg.Add(1)
+
 	go func() {
+		// Use defer to decrement the WaitGroup counter before the goroutine returns.
+		defer app.wg.Done()
+
 		defer func() {
 			if err := recover(); err != nil {
 				app.logger.PrintError(fmt.Errorf("%s", err), nil)
